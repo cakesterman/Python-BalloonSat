@@ -18,23 +18,27 @@ class test_class():
 list_of_class = []
 altitude_list = []
 
+# opens and reads a database sorted by altitudes starting from least to greatest
 with open('datasamplesSortedAlt.json') as json_file:
 
     data = json.load(json_file)
 
     for x in data:
 
+        # creates an instance of the class object, TODO: change names
         test_instance = test_class()
 
+        # checks if altitude was already added to the list
         if x['altitude'] not in altitude_list:
 
             test_instance.set_altitude(x['altitude'])
 
             altitude_list.append(x['altitude'])
 
-
+        # critical part, has to be a nested loop to then add all the bssids
         for add_bssid in data:
 
+            # checks the conditions for adding a bssid to the list
             if add_bssid['altitude'] == test_instance.altitude \
                     and add_bssid['bssid'] != "BSat2019" \
                     and add_bssid['bssid'] \
@@ -46,9 +50,11 @@ with open('datasamplesSortedAlt.json') as json_file:
 
         list_of_class.append(test_instance)
 
+# variables for tracking the altitude with the highest amount of bssids
 highest_num_of_bssid = 0
 at_altitude = 0
 
+# this reads the list of objects in the array TODO: change variable name
 for y in list_of_class:
 
     if y.altitude != 0:
