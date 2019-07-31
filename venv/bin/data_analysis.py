@@ -16,25 +16,21 @@ with open('datasamplesSortedAlt.json') as json_file:
 
         alt = x['altitude']
 
+        # Checks to see if bssid is BSat2019 and if so, skip this iteration (it's junk data)
         if x['bssid'] == "BSat2019":
-            print("SKIPPING")
             continue
 
-
+        # if altitude is not a key, adds it as a key
         if alt not in data_dict.keys():
 
             data_dict[alt] = [x['bssid']]
 
-            print("NOT IN,", data_dict[alt])
-
         elif alt in data_dict.keys() and x['bssid'] not in data_dict.values():
 
+            # This if checks to see if the bssid is already in the key value list, we don't want duplicates
             if x['bssid'] in data_dict[alt]:
 
-                print("REPEAT")
                 continue
-
-            print("IN,", data_dict[alt])
 
             data_dict[alt].append(x['bssid'])
 
@@ -67,6 +63,8 @@ print("Highest number of bssids is" , highest_num_of_bssid , "at altitude" , at_
 
 #print(len(list_of_class))
 
+
+# Below is working to display the data in charts
 import matplotlib.pyplot as plt
 
 print(data_dict.keys())
