@@ -1,5 +1,5 @@
 # Python-BalloonStat
-Project for my Balloon Stat that was worked on during my internship
+Project for my Balloon Stat that was worked on at Army Cyber Institue at West Point
 
 Database info was not added nor are any images attatched to the project.
 
