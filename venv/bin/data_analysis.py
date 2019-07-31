@@ -1,26 +1,7 @@
 import json
 
-# class test_class():
-#
-#     def __init__(self):
-#         self.altitude = 0
-#         self.bssid_list = []
-#
-#
-#     def add_bssid(self):
-#
-#         self.num_bssids += 1
-#
-#     def set_altitude(self, alt):
-#
-#         self.altitude = alt
-#
-# list_of_class = []
-# altitude_list = []
-
 data_dict = {}
 
-# added_value = False
 
 # opens and reads a database sorted by altitudes starting from least to greatest
 with open('datasamplesSortedAlt.json') as json_file:
@@ -30,10 +11,10 @@ with open('datasamplesSortedAlt.json') as json_file:
 
     for x in data:
 
-        alt = x['altitude']
-
         # -------------------------------
         #      Changing Data Structure
+
+        alt = x['altitude']
 
         if x['bssid'] == "BSat2019":
             print("SKIPPING")
@@ -41,9 +22,6 @@ with open('datasamplesSortedAlt.json') as json_file:
 
 
         if alt not in data_dict.keys():
-
-
-            #bssid_list = []
 
             data_dict[alt] = [x['bssid']]
 
@@ -62,43 +40,8 @@ with open('datasamplesSortedAlt.json') as json_file:
 
             print("Adding " , x['bssid'] , "to altitude" , x['altitude'])
 
-
-
         # -------------------------------
         #      Changing Data Structure
-
-        # creates an instance of the class object, TODO: change variable names
-        # test_instance = test_class()
-
-        # checks if altitude was already added to the list
-        # if x['altitude'] not in altitude_list:
-        #
-        #     test_instance.set_altitude(x['altitude'])
-        #
-        #     altitude_list.append(x['altitude'])
-        #
-        #     added_value = True
-        #
-        # # critical part, has to be a nested loop to then add all the bssids
-        # for add_bssid in data:
-        #
-        #     # checks the conditions for adding a bssid to the list
-        #     if add_bssid['altitude'] == test_instance.altitude \
-        #             and add_bssid['bssid'] != "BSat2019" \
-        #             and add_bssid['bssid'] \
-        #             not in test_instance.bssid_list:
-        #
-        #         print("Adding BSSID" , add_bssid['bssid'] , " to altitude list " , test_instance.altitude)
-        #
-        #         test_instance.bssid_list.append(add_bssid['bssid'])
-        #
-        #         added_value = True
-        #
-        # if added_value:
-        #
-        #     list_of_class.append(test_instance)
-        #
-        #     added_value = False
 
 # variables for tracking the altitude with the highest amount of bssids
 highest_num_of_bssid = 0
@@ -120,35 +63,7 @@ for key, value in data_dict.items():
 
     #print(len(value))
 
-
-
 print("Highest number of bssids is" , highest_num_of_bssid , "at altitude" , at_altitude , "m")
-
-
-
-#for x in data_dict.values():
-
-
-
-# for x, y in data_dict.items():
-#
-#     print("For altitude" , x, "there are " , y)
-
-# this reads the list of objects in the array TODO: change variable name
-# for y in list_of_class:
-#
-#     if y.altitude != 0:
-#
-#         if len(y.bssid_list) > highest_num_of_bssid:
-#
-#             highest_num_of_bssid = len(y.bssid_list)
-#             at_altitude = y.altitude
-
-
-        #print("For altitude " , y.altitude , "m there are " , len(y.bssid_list) , " bssids")
-
-
-
 
 #print(len(list_of_class))
 
