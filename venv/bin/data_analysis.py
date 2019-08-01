@@ -13,7 +13,6 @@ def plot_bssid_by_alt(filename):
 
         data = json.load(json_file)
 
-
         for x in data:
 
             # -------------------------------
@@ -50,6 +49,7 @@ def plot_bssid_by_alt(filename):
 
     print(len(data_dict))
 
+    # Prints the number of BSSIDs at each altitude
     for key, value in data_dict.items():
 
         num_of_bssids = len(value)
@@ -77,16 +77,25 @@ def plot_bssid_by_alt(filename):
     fig, ax = plt.subplots()
 
 
-    ax.scatter(list(data_dict.keys()), [len(i) for i in data_dict.values()])
-    ax.plot(list(data_dict.keys()), [len(i) for i in data_dict.values()])
+    #ax.scatter(list(data_dict.keys()), [len(i) for i in data_dict.values()])
+    #ax.plot(list(data_dict.keys()), [len(i) for i in data_dict.values()])
+    #ax.plot([len(i) for i in data_dict.values()], list(data_dict.keys()))
+    #ax.scatter([len(i) for i in data_dict.values()], list(data_dict.keys()))
+
+    #plt.bar()
 
     plt.show()
+
+# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 def check_manufactures():
 
     matched_manu_dict = {}
 
     parse_manufactures()
+
+    count = 0
 
     with open('datasamplesBSSID.json') as json_file:
 
@@ -138,52 +147,112 @@ def check_manufactures():
 
         if newString in manufacture_dict.keys():
 
+            count += 1
+
             if manufacture_dict.get(newString) not in matched_manu_dict:
 
                 #print("Creating new key with", manufacture_dict.get(newString))
 
-                matched_manu_dict[manufacture_dict[newString]] = 1
+                matched_manu_dict[manufacture_dict[newString]] = 0
 
-            elif manufacture_dict.get(newString) in matched_manu_dict:
+            #elif manufacture_dict.get(newString) in matched_manu_dict:
 
-                matched_manu_dict[manufacture_dict[newString]] += 1
+
+            matched_manu_dict[manufacture_dict[newString]] += 1
+
+        else:
+
+            print(newString)
+
 
             #print("MATCH with", newString, "and", manufacture_dict.get(newString))
 
     #print(len(matched_manu_dict))
 
+    print(count)
+
     for x, y in matched_manu_dict.items():
 
         print(x, y)
 
+    # Output to a CSV file
+    with open('Manufacturers According to BSSIDs Logged.csv', 'w') as csv_write_file:
+
+        manu_writer = csv.writer(csv_write_file)
+
+        manu_writer.writerow(["Manufacturer", "Number of matches"])
+
+        for key, value in matched_manu_dict.items():
+
+            manu_writer.writerow([key, value])
+
+
     #print(matched_manu_dict)
 
+
+# Parses 3 different CSV databases and puts the in a dictionary by macID and vendor
 def parse_manufactures():
 
-    with open('oui.csv') as csvfile:
+    with open('convertcsv.csv') as csvfile:
 
         reader = csv.reader(csvfile)
 
-        currentRow = 0
+        current_col = 0
 
         for row in reader:
 
-            if currentRow == 1 or currentRow == 2:
+            if current_col == 0 or current_col == 1:
 
-                #print(row[1], row[2])
+                manufacture_dict[row[0]] = row[1].strip()
 
-                manufacture_dict[row[1]] = row[2]
+            current_col += 1
 
-            currentRow += 1
+            if current_col > 2:
 
-            if currentRow > 3:
+                current_col = 0
 
-                currentRow = 0
+    with open('oui.csv') as csvfile2:
 
+        reader = csv.reader(csvfile2)
+
+        current_col = 0
+
+        for row in reader:
+
+            if current_col == 1 or current_col == 2:
+
+                if row[1] not in manufacture_dict.keys():
+
+                    #print("ADDING VALUE")
+
+                    manufacture_dict[row[1]] = row[2]
+
+            current_col += 1
+
+            if current_col > 3:
+
+                current_col = 0
+                
+    with open('macaddress.io-db.csv') as csvfile3:
+        
+        reader = csv.reader(csvfile3)
+        
+        current_col = 0
+
+        for row in reader:
+
+            if current_col == 0 or current_col == 2:
+
+                manufacture_dict[row[0].replace(":", "")] = row[2]
+
+            current_col += 1
+
+            if current_col > 2:
+
+                current_col = 0
+
+    print(len(manufacture_dict))
     #print(manufacture_dict)
-
-
-
 
 #plot_bssid_by_alt('datasamplesSortedAlt.json')
 
