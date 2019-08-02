@@ -7,6 +7,7 @@ manufacture_dict = {}
 bssid_list = []
 bssid_list_stripped = []
 
+
 def plot_bssid_by_alt(filename):
 
     data_dict = {}
@@ -82,15 +83,21 @@ def plot_bssid_by_alt(filename):
 
     #ax.scatter(list(data_dict.keys()), [len(i) for i in data_dict.values()])
     #ax.plot(list(data_dict.keys()), [len(i) for i in data_dict.values()])
-    ax.plot([len(i) for i in data_dict.values()], list(data_dict.keys()))
+    #ax.plot([len(i) for i in data_dict.values()], list(data_dict.keys()))
     ax.scatter([len(i) for i in data_dict.values()], list(data_dict.keys()))
+
+    plt.xlabel("Number of BSSIDs")
+    plt.ylabel("Altitude")
+    plt.title("Number of BSSIDs at Altitude")
 
     #plt.bar()
 
     plt.show()
 
+
 # -------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------
+
 
 def check_manufactures():
 
@@ -104,10 +111,6 @@ def check_manufactures():
 
         bssid_dict = json.load(json_file)
 
-        # for bssids in bssid_dict:
-        #
-        #     bssids['bssid'].replace(":", "")
-
         for bssids in bssid_dict:
 
             temp_bssid = bssids['bssid'].replace(":", "")
@@ -118,14 +121,7 @@ def check_manufactures():
 
                 continue
 
-            # temp_bssid = bssids['bssid'].replace(":", "")
-
-            # temp_bssid = temp_bssid.replace(":", "")
-
-            #bssid_list.append(temp_bssid)
             bssid_list_stripped.append(bssids['bssid'].replace(":", ""))
-
-            #print(bssids['bssid'])
 
     print(len(bssid_list_stripped))
 
@@ -135,8 +131,6 @@ def check_manufactures():
 
         newString = ""
 
-        #print(bssids)
-
         for index, letter in enumerate(bssids):
 
             if index < 6:
@@ -145,8 +139,6 @@ def check_manufactures():
             else:
 
                 break
-
-        #print(newString)
 
         if newString in manufacture_dict.keys():
 
@@ -159,7 +151,6 @@ def check_manufactures():
                 matched_manu_dict[manufacture_dict[newString]] = 0
 
             #elif manufacture_dict.get(newString) in matched_manu_dict:
-
 
             matched_manu_dict[manufacture_dict[newString]] += 1
 
@@ -195,9 +186,6 @@ def check_manufactures():
     plot_manufactures(matched_manu_dict)
 
 
-
-
-
 def plot_manufactures(dict):
 
     #plt.barh(list(dict.keys()), dict.values())
@@ -214,6 +202,7 @@ def plot_manufactures(dict):
     plt.title("Manufacturers According to BSSIDs Logged")
 
     plt.show()
+
 
 # Parses 3 different CSV databases and puts the in a dictionary by macID and vendor
 def parse_manufactures():
@@ -296,27 +285,59 @@ def analyze_channels():
             # Iterates to next index if no channel data
             if x['bssid'] in bssid_list2 or x['channel'] == "None" or x['bssid'] == "BSat2019":
 
+                if x['bssid'] in bssid_list2:
+
+                    #print(x['bssid'], "on channel", x['channel'], ", NOT UNIQUE")
+
+                else:
+                    #print(x['bssid'], "on channel", x['channel'])
+
                 #print("Skipping")
                 continue
 
-            if x['bssid'] not in bssid_list2 and x['channel'] not in channel_dict.keys():
+            if x['bssid'] not in bssid_list2 and str(x['channel']) not in channel_dict.keys():
 
                 #print(x['channel'])
 
-                channel_dict[x['channel']] = 0
+                channel_dict[str(x['channel'])] = 0
                 bssid_list2.append(x['bssid'])
 
             #print("Adding channel", x['channel'], "with BSSID", x['bssid'])
-            channel_dict[x['channel']] += 1
+            channel_dict[str(x['channel'])] += 1
             bssid_list2.append(x['bssid'])
+
+    #plot_channels(channel_dict)
 
     #print(channel_dict)
     for channel, value in channel_dict.items():
 
         print("Channel", channel, "had", value, "unique BSSIDs")
 
-    output_to_csv("Channels with Unique BSSIDs.csv", "Channel", "Number", channel_dict)
+    #output_to_csv("Channels with Unique BSSIDs.csv", "Channel", "Number", channel_dict)
 
+
+def plot_channels(dict):
+
+    plt.figure(figsize=(11,9))
+    fix, ax = plt.subplots(figsize=(11,9))
+
+    ax.bar(list(dict.keys()), dict.values())
+
+    plt.yticks(np.arange(0, 121, 10.0))
+
+    plt.xlabel("Channel")
+    plt.ylabel("Number of BSSIDs")
+    plt.title("Number of BSSIDs on Different Channels")
+
+    #plt.xticks(str(dict.keys().))
+
+    plt.show()
+
+
+
+
+# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 
 
 def count_unique_bssids():
@@ -355,11 +376,13 @@ def output_to_csv(filename, col1_name, col2_name, dict):
             writer.writerow([key, value])
 
 
-
 count_unique_bssids()
-#plot_bssid_by_alt('datasamplesSortedAlt.json')
 
-#check_manufactures()
+
+# plot_bssid_by_alt('datasamplesSortedAlt.json')
+
+
+# check_manufactures()
 
 analyze_channels()
 
