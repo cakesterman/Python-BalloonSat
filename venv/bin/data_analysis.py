@@ -285,12 +285,12 @@ def analyze_channels():
             # Iterates to next index if no channel data
             if x['bssid'] in bssid_list2 or x['channel'] == "None" or x['bssid'] == "BSat2019":
 
-                if x['bssid'] in bssid_list2:
-
-                    #print(x['bssid'], "on channel", x['channel'], ", NOT UNIQUE")
-
-                else:
-                    #print(x['bssid'], "on channel", x['channel'])
+                # if x['bssid'] in bssid_list2:
+                #
+                #     #print(x['bssid'], "on channel", x['channel'], ", NOT UNIQUE")
+                #
+                # else:
+                #     #print(x['bssid'], "on channel", x['channel'])
 
                 #print("Skipping")
                 continue
