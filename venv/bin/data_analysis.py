@@ -1,8 +1,11 @@
 import json
 import csv
+import matplotlib.pyplot as plt
+import numpy as np
 
 manufacture_dict = {}
 bssid_list = []
+bssid_list_stripped = []
 
 def plot_bssid_by_alt(filename):
 
@@ -70,7 +73,7 @@ def plot_bssid_by_alt(filename):
 
 
     # Below is working to display the data in charts
-    import matplotlib.pyplot as plt
+
 
     print(data_dict.keys())
 
@@ -79,8 +82,8 @@ def plot_bssid_by_alt(filename):
 
     #ax.scatter(list(data_dict.keys()), [len(i) for i in data_dict.values()])
     #ax.plot(list(data_dict.keys()), [len(i) for i in data_dict.values()])
-    #ax.plot([len(i) for i in data_dict.values()], list(data_dict.keys()))
-    #ax.scatter([len(i) for i in data_dict.values()], list(data_dict.keys()))
+    ax.plot([len(i) for i in data_dict.values()], list(data_dict.keys()))
+    ax.scatter([len(i) for i in data_dict.values()], list(data_dict.keys()))
 
     #plt.bar()
 
@@ -109,7 +112,7 @@ def check_manufactures():
 
             temp_bssid = bssids['bssid'].replace(":", "")
 
-            if bssids['bssid'] == "BSat2019" or bssids['bssid'] in bssid_list or temp_bssid in bssid_list:
+            if bssids['bssid'] == "BSat2019" or bssids['bssid'] in bssid_list_stripped or temp_bssid in bssid_list_stripped:
 
                 #print("Duplicate")
 
@@ -120,15 +123,15 @@ def check_manufactures():
             # temp_bssid = temp_bssid.replace(":", "")
 
             #bssid_list.append(temp_bssid)
-            bssid_list.append(bssids['bssid'].replace(":", ""))
+            bssid_list_stripped.append(bssids['bssid'].replace(":", ""))
 
             #print(bssids['bssid'])
 
-    print(len(bssid_list))
+    print(len(bssid_list_stripped))
 
     #print(bssid_list)
 
-    for bssids in bssid_list:
+    for bssids in bssid_list_stripped:
 
         newString = ""
 
@@ -189,6 +192,28 @@ def check_manufactures():
 
     #print(matched_manu_dict)
 
+    plot_manufactures(matched_manu_dict)
+
+
+
+
+
+def plot_manufactures(dict):
+
+    #plt.barh(list(dict.keys()), dict.values())
+    #plt.yscale('log')
+    #plt.ylabel("...", labelpad=40)
+    plt.figure(figsize=(11,9))
+    fig, ax = plt.subplots(figsize=(11,9))
+    ax.barh(list(dict.keys()), dict.values())
+
+    plt.xticks(np.arange(0, 121, 10.0))
+
+    plt.ylabel("Manufactures")
+    plt.xlabel("Number of BSSID Matches")
+    plt.title("Manufacturers According to BSSIDs Logged")
+
+    plt.show()
 
 # Parses 3 different CSV databases and puts the in a dictionary by macID and vendor
 def parse_manufactures():
@@ -254,6 +279,88 @@ def parse_manufactures():
     print(len(manufacture_dict))
     #print(manufacture_dict)
 
+# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
+
+def analyze_channels():
+
+    channel_dict = {}
+    bssid_list2 = []
+
+    with open('datasamplesSortedAlt.json') as json_file:
+
+        data = json.load(json_file)
+
+        for x in data:
+
+            # Iterates to next index if no channel data
+            if x['bssid'] in bssid_list2 or x['channel'] == "None" or x['bssid'] == "BSat2019":
+
+                #print("Skipping")
+                continue
+
+            if x['bssid'] not in bssid_list2 and x['channel'] not in channel_dict.keys():
+
+                #print(x['channel'])
+
+                channel_dict[x['channel']] = 0
+                bssid_list2.append(x['bssid'])
+
+            #print("Adding channel", x['channel'], "with BSSID", x['bssid'])
+            channel_dict[x['channel']] += 1
+            bssid_list2.append(x['bssid'])
+
+    #print(channel_dict)
+    for channel, value in channel_dict.items():
+
+        print("Channel", channel, "had", value, "unique BSSIDs")
+
+    output_to_csv("Channels with Unique BSSIDs.csv", "Channel", "Number", channel_dict)
+
+
+
+def count_unique_bssids():
+
+    #bssid_list = []
+    bssid_list_repeat = []
+
+    with open('datasamplesSortedAlt.json') as json_file1:
+
+        data = json.load(json_file1)
+
+        for x in data:
+
+            if x['bssid'] not in bssid_list and x['bssid'] != "BSat2019":
+
+                bssid_list.append(x['bssid'])
+
+            else:
+
+                bssid_list_repeat.append(x['bssid'])
+
+                #print(x['bssid'], "is a repeat")
+
+    print("There are", len(bssid_list), "unique BSSIDs")
+    print("There are", len(bssid_list_repeat), "repeat BSSIDs")
+
+
+# Currently only set up for 2 col, may change in the future
+def output_to_csv(filename, col1_name, col2_name, dict):
+    with open(filename, 'w') as csv_write_file:
+        writer = csv.writer(csv_write_file)
+
+        writer.writerow([col1_name, col2_name])
+
+        for key, value in dict.items():
+            writer.writerow([key, value])
+
+
+
+count_unique_bssids()
 #plot_bssid_by_alt('datasamplesSortedAlt.json')
 
-check_manufactures()
+#check_manufactures()
+
+analyze_channels()
+
+
