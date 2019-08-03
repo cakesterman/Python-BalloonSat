@@ -326,15 +326,13 @@ def plot_channels(dict):
     ghz_2 = {}
     ghz_5 = {}
 
+    # Need to assign to new dicts because you have to plot them separate for legend lables
     for keys, values in dict.items():
 
         if int(keys) <= 11:
             ghz_2[keys] = values
         else:
             ghz_5[keys] = values
-
-    plt.figure(figsize=(11,9))
-    fix, ax = plt.subplots(figsize=(11,9))
 
     colors_2hz = []
     colors_5ghz = []
@@ -353,9 +351,11 @@ def plot_channels(dict):
         else:
             colors_5ghz.append('b')
 
-    #ax.bar(list(dict.keys()), dict.values(), 0.5, colors=['red'])
-    #plt.bar(list(dict.keys()), dict.values(), color=colors)
+    # This sets the size of the graph
+    plt.figure(figsize=(11,9))
+    fix, ax = plt.subplots(figsize=(11,9))
 
+    # Plots the graphs according to the dictionaries
     plt.bar(list(ghz_2.keys()), ghz_2.values(), label='2.4ghz', color=colors_2hz)
     plt.bar(list(ghz_5.keys()), ghz_5.values(), label='5ghz', color=colors_5ghz)
 
@@ -413,9 +413,7 @@ def output_to_csv(filename, col1_name, col2_name, dict):
 
 count_unique_bssids()
 
-
 # plot_bssid_by_alt('datasamplesSortedAlt.json')
-
 
 # check_manufactures()
 
