@@ -99,6 +99,10 @@ def plot_bssid_by_alt(filename):
 # -------------------------------------------------------------------------------
 
 
+"""
+Reads in BSSIDs and strips them to the first six digits.  Then it checks those against a dictionary of manufacturer IDs
+that were gathered from 3 different databases.  It tallies up how many manufacturer IDs that were found from the balloon
+"""
 def check_manufactures():
 
     matched_manu_dict = {}
@@ -170,16 +174,17 @@ def check_manufactures():
         print(x, y)
 
     # Output to a CSV file
-    with open('Manufacturers According to BSSIDs Logged.csv', 'w') as csv_write_file:
+    # with open('Manufacturers According to BSSIDs Logged.csv', 'w') as csv_write_file:
+    #
+    #     manu_writer = csv.writer(csv_write_file)
+    #
+    #     manu_writer.writerow(["Manufacturer", "Number of matches"])
+    #
+    #     for key, value in matched_manu_dict.items():
+    #
+    #         manu_writer.writerow([key, value])
 
-        manu_writer = csv.writer(csv_write_file)
-
-        manu_writer.writerow(["Manufacturer", "Number of matches"])
-
-        for key, value in matched_manu_dict.items():
-
-            manu_writer.writerow([key, value])
-
+    output_to_csv('Manufacturers According to BSSIDs Logged.csv', "Manufacturer", "Number of matches", matched_manu_dict)
 
     #print(matched_manu_dict)
 
@@ -306,7 +311,7 @@ def analyze_channels():
             channel_dict[str(x['channel'])] += 1
             bssid_list2.append(x['bssid'])
 
-    #plot_channels(channel_dict)
+    plot_channels(channel_dict)
 
     #print(channel_dict)
     for channel, value in channel_dict.items():
@@ -318,10 +323,41 @@ def analyze_channels():
 
 def plot_channels(dict):
 
+    ghz_2 = {}
+    ghz_5 = {}
+
+    for keys, values in dict.items():
+
+        if int(keys) <= 11:
+            ghz_2[keys] = values
+        else:
+            ghz_5[keys] = values
+
     plt.figure(figsize=(11,9))
     fix, ax = plt.subplots(figsize=(11,9))
 
-    ax.bar(list(dict.keys()), dict.values())
+    colors_2hz = []
+    colors_5ghz = []
+
+    for keys in ghz_2.keys():
+
+        if int(keys) <= 11:
+            colors_2hz.append('g')
+        else:
+            colors_2hz.append('b')
+
+    for keys in ghz_5.keys():
+
+        if int(keys) <= 11:
+            colors_5ghz.append('g')
+        else:
+            colors_5ghz.append('b')
+
+    #ax.bar(list(dict.keys()), dict.values(), 0.5, colors=['red'])
+    #plt.bar(list(dict.keys()), dict.values(), color=colors)
+
+    plt.bar(list(ghz_2.keys()), ghz_2.values(), label='2.4ghz', color=colors_2hz)
+    plt.bar(list(ghz_5.keys()), ghz_5.values(), label='5ghz', color=colors_5ghz)
 
     plt.yticks(np.arange(0, 121, 10.0))
 
@@ -329,12 +365,11 @@ def plot_channels(dict):
     plt.ylabel("Number of BSSIDs")
     plt.title("Number of BSSIDs on Different Channels")
 
+    plt.legend()
+
     #plt.xticks(str(dict.keys().))
 
     plt.show()
-
-
-
 
 # -------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------
@@ -385,5 +420,3 @@ count_unique_bssids()
 # check_manufactures()
 
 analyze_channels()
-
-
