@@ -375,6 +375,96 @@ def plot_channels(dict):
 # -------------------------------------------------------------------------------
 
 
+def analyze_time():
+
+    time_dict = {}
+    time_dict_list = []
+
+    with open('balloonsatSortedTime.json') as json_file:
+
+        data = json.load(json_file)
+
+        for x in data:
+
+            time = x['created_at']
+
+            new_time = ""
+
+            for index, value in enumerate(str(time)):
+
+                if index > 10 and index < 19:
+
+                    new_time += value
+
+            #print(new_time)
+
+
+            #if new_time not in time_dict and x['created_at'] != 0:
+            if new_time not in time_dict and x['created_at'] != 0:
+                print("Happening")
+                time_dict[new_time] = [x['altitude']]
+                time_dict[new_time].append(x['latitude'])
+                time_dict[new_time].append(x['longitude'])
+
+            #print(new_time)
+            try:
+
+                if x['bssid'] not in time_dict[new_time]:
+
+                    time_dict[new_time].append(x['bssid'])
+
+
+                # if x['latitude'] not in time_dict[new_time] or x['longitude'] not in time_dict[new_time]:
+                #
+                #     time_dict[new_time].append(x['latitude'])
+                #     time_dict[new_time].append(x['latitude'])
+
+            except:
+
+                print("Error on", x['altitude'])
+
+        print(len(time_dict))
+        #print(time_dict)
+
+        for key, value in time_dict.items():
+
+            print(key)
+
+            for list_values in range(len(value)):
+
+                print(value[list_values])
+
+
+            #print(len(value))
+            #print(key, value[0], value[1], value[2], value[3])
+
+            print("------------------------------")
+
+# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
+
+
+# This function is pointless because every BSSID has a security of wpa2
+def analyze_security():
+
+    temp_bssid_list = []
+
+    with open('datasamplesSortedAlt.json') as json_file:
+
+        data = json.load(json_file)
+
+        for x in data:
+
+            if x['enc_type'] != 'ENC_TYPE' and x['bssid'] != "BSat2019":
+
+                #print(x['enc_type'])
+                temp_bssid_list.append(x['bssid'])
+
+
+# -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
+
+
 def count_unique_bssids():
 
     #bssid_list = []
@@ -417,4 +507,8 @@ count_unique_bssids()
 
 # check_manufactures()
 
-analyze_channels()
+#analyze_channels()
+
+#analyze_security()
+
+analyze_time()
