@@ -401,7 +401,7 @@ def analyze_time():
 
             #if new_time not in time_dict and x['created_at'] != 0:
             if new_time not in time_dict and x['created_at'] != 0:
-                print("Happening")
+
                 time_dict[new_time] = [x['altitude']]
                 time_dict[new_time].append(x['latitude'])
                 time_dict[new_time].append(x['longitude'])
@@ -412,12 +412,6 @@ def analyze_time():
                 if x['bssid'] not in time_dict[new_time]:
 
                     time_dict[new_time].append(x['bssid'])
-
-
-                # if x['latitude'] not in time_dict[new_time] or x['longitude'] not in time_dict[new_time]:
-                #
-                #     time_dict[new_time].append(x['latitude'])
-                #     time_dict[new_time].append(x['latitude'])
 
             except:
 
@@ -435,10 +429,57 @@ def analyze_time():
                 print(value[list_values])
 
 
-            #print(len(value))
-            #print(key, value[0], value[1], value[2], value[3])
+            print(len(value))
+            print(key, value[0], value[1], value[2], value[3])
 
             print("------------------------------")
+
+    plot_time(time_dict)
+
+
+def plot_time(dict):
+
+    temp_list = []
+
+    for upper_index, values in enumerate(dict.values()):
+
+        #print(upper_index)
+
+        for lower_index, inner_value in enumerate(values):
+
+            if lower_index > 2:
+
+                if inner_value == "BSat2019":
+
+                    temp_list.insert(upper_index, 0)
+
+                else:
+
+                    temp_list[upper_index] += 1
+
+    print(temp_list)
+    print(len(temp_list))
+
+
+    plt.figure(figsize=(15, 9))
+    fix, ax = plt.subplots(figsize=(15, 9))
+
+    plt.plot(list(dict.keys()), temp_list)
+
+    plt.xticks(rotation='vertical')
+
+    plt.xlabel("Time")
+    plt.ylabel("Number of BSSIDs")
+    plt.title("BSSIDs as Time Increases")
+
+    every_nth = 10
+    for n, label in enumerate(ax.xaxis.get_ticklabels()):
+        if n % every_nth != 0:
+            label.set_visible(False)
+
+    plt.show()
+
+
 
 # -------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------
